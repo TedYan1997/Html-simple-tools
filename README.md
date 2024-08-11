@@ -5,4 +5,4 @@
   3. 3 constant slots to store (green buttons)
   4. background change with the BK button
 # Usage:
-  Download and open as webpage
+  Download the html file. Open it in a web browser such as Chrome or Edge..

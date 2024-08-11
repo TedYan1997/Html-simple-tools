@@ -1,0 +1,241 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>工程計算機</title>
+    <style>
+        body {
+            font-family: Arial, sans-serif;
+            display: flex;
+            justify-content: center;
+            align-items: center;
+            height: 100vh;
+            background-color: rgba(255, 255, 255, 0.5);
+            background-image: url('');
+            background-size: cover;
+        }
+        .calculator {
+            background-color: rgba(255, 255, 255, 0.8);
+            padding: 20px;
+            border-radius: 10px;
+            box-shadow: 0 0 10px rgba(0, 0, 0, 0.1);
+        }
+        .display {
+            background-color: #fff;
+            padding: 10px;
+            border: 1px solid #ccc;
+            border-radius: 5px;
+            margin-bottom: 10px;
+            text-align: right;
+            font-size: 24px;
+        }
+        .buttons {
+            display: grid;
+            grid-template-columns: repeat(4, 1fr);
+            gap: 10px;
+        }
+        .button {
+            padding: 20px;
+            border: none;
+            border-radius: 5px;
+            font-size: 18px;
+            cursor: pointer;
+        }
+        .button-operator {
+            background-color: #FFD700;
+        }
+        .button-number {
+            background-color: #FFA500;
+        }
+        .button-clear {
+            background-color: #FF69B4;
+        }
+        .button-function {
+            background-color: #87CEEB;
+        }
+        .button-constant {
+            background-color: #90EE90;
+        }
+        .button-background {
+            background-color: #778899;
+        }
+    </style>
+</head>
+<body>
+    <div class="calculator">
+        <div class="display" id="display">0</div>
+        <div class="buttons">
+            <button class="button button-clear" onclick="clearDisplay()">C</button>
+            <button class="button button-operator" onclick="appendOperator('/')">/</button>
+            <button class="button button-operator" onclick="appendOperator('*')">*</button>
+            <button class="button button-operator" onclick="appendOperator('-')">-</button>
+            <button class="button button-number" onclick="appendNumber(7)">7</button>
+            <button class="button button-number" onclick="appendNumber(8)">8</button>
+            <button class="button button-number" onclick="appendNumber(9)">9</button>
+            <button class="button button-operator" onclick="appendOperator('+')">+</button>
+            <button class="button button-number" onclick="appendNumber(4)">4</button>
+            <button class="button button-number" onclick="appendNumber(5)">5</button>
+            <button class="button button-number" onclick="appendNumber(6)">6</button>
+            <button class="button button-function" onclick="appendFunction('sin')">sin</button>
+            <button class="button button-number" onclick="appendNumber(1)">1</button>
+            <button class="button button-number" onclick="appendNumber(2)">2</button>
+            <button class="button button-number" onclick="appendNumber(3)">3</button>
+            <button class="button button-function" onclick="appendFunction('cos')">cos</button>
+            <button class="button button-number" onclick="appendNumber(0)">0</button>
+            <button class="button button-number" onclick="appendDot()">.</button>
+            <button class="button button-function" onclick="calculateResult()">=</button>
+            <button class="button button-function" onclick="appendFunction('tan')">tan</button>
+            <button class="button button-function" onclick="appendFunction('log')">Log</button>
+            <button class="button button-function" onclick="appendFunction('ln')">ln</button>
+            <button class="button button-function" onclick="appendFunction('exp')">e^x</button>
+            <button class="button button-function" onclick="appendFunction('pow')">x^y</button>
+            <button class="button button-function" onclick="appendFunction('root')">y√x</button>
+            <button class="button button-function" onclick="appendFunction('inv')">1/x</button>
+            <button class="button button-constant" onclick="storeConstant(1)">Store C1</button>
+            <button class="button button-constant" onclick="storeConstant(2)">Store C2</button>
+            <button class="button button-constant" onclick="storeConstant(3)">Store C3</button>
+            <button class="button button-constant" onclick="readConstant(1)">C1</button>
+            <button class="button button-constant" onclick="readConstant(2)">C2</button>
+            <button class="button button-constant" onclick="readConstant(3)">C3</button>
+            <button class="button button-background" onclick="changeBackground()">BK</button>
+        </div>
+    </div>
+
+    <script>
+        let display = document.getElementById('display');
+        let currentInput = '';
+        let currentOperator = '';
+        let previousInput = '';
+        let constants = [0, 0, 0];
+
+        // 從本地存儲中讀取背景圖片
+        const savedBackground = localStorage.getItem('backgroundImage');
+        if (savedBackground) {
+            document.body.style.backgroundImage = `url(${savedBackground})`;
+        }
+
+        function clearDisplay() {
+            currentInput = '';
+            currentOperator = '';
+            previousInput = '';
+            display.textContent = '0';
+        }
+
+        function appendNumber(number) {
+            currentInput += number;
+            display.textContent = currentInput;
+        }
+
+        function appendDot() {
+            if (!currentInput.includes('.')) {
+                currentInput += '.';
+                display.textContent = currentInput;
+            }
+        }
+
+        function appendOperator(operator) {
+            if (currentInput === '') return;
+            if (previousInput !== '') {
+                calculateResult();
+            }
+            currentOperator = operator;
+            previousInput = currentInput;
+            currentInput = '';
+        }
+
+        function appendFunction(func) {
+            if (currentInput === '') return;
+            let result;
+            switch (func) {
+                case 'sin':
+                    result = Math.sin(currentInput * Math.PI / 180);
+                    break;
+                case 'cos':
+                    result = Math.cos(currentInput * Math.PI / 180);
+                    break;
+                case 'tan':
+                    result = Math.tan(currentInput * Math.PI / 180);
+                    break;
+                case 'log':
+                    result = Math.log10(currentInput);
+                    break;
+                case 'ln':
+                    result = Math.log(currentInput);
+                    break;
+                case 'exp':
+                    result = Math.exp(currentInput);
+                    break;
+                case 'pow':
+                    result = Math.pow(currentInput, prompt('Enter the exponent:'));
+                    break;
+                case 'root':
+                    result = Math.pow(currentInput, 1 / prompt('Enter the root:'));
+                    break;
+                case 'inv':
+                    result = 1 / currentInput;
+                    break;
+            }
+            currentInput = result.toString();
+            display.textContent = currentInput;
+        }
+
+        function calculateResult() {
+            let result;
+            const prev = parseFloat(previousInput);
+            const current = parseFloat(currentInput);
+            if (isNaN(prev) || isNaN(current)) return;
+            switch (currentOperator) {
+                case '+':
+                    result = prev + current;
+                    break;
+                case '-':
+                    result = prev - current;
+                    break;
+                case '*':
+                    result = prev * current;
+                    break;
+                case '/':
+                    result = prev / current;
+                    break;
+                default:
+                    return;
+            }
+            currentInput = result.toString();
+            display.textContent = currentInput;
+            currentOperator = '';
+            previousInput = '';
+        }
+
+        function storeConstant(index) {
+            if (currentInput === '') return;
+            constants[index - 1] = parseFloat(currentInput);
+            alert(`Constant C${index} stored as ${constants[index - 1]}`);
+        }
+
+        function readConstant(index) {
+            currentInput = constants[index - 1].toString();
+            display.textContent = currentInput;
+        }
+
+        function changeBackground() {
+            const input = document.createElement('input');
+            input.type = 'file';
+            input.accept = 'image/*';
+            input.onchange = (event) => {
+                const file = event.target.files[0];
+                if (file) {
+                    const reader = new FileReader();
+                    reader.onload = (e) => {
+                        document.body.style.backgroundImage = `url(${e.target.result})`;
+                        // 將背景圖片URL保存到本地存儲
+                        localStorage.setItem('backgroundImage', e.target.result);
+                    };
+                    reader.readAsDataURL(file);
+                }
+            };
+            input.click();
+        }
+    </script>
+</body>
+</html>
